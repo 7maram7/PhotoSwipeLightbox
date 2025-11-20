@@ -29,7 +29,7 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
         
         // Our custom initialization script
         $jsPath = public_url('plugins/PhotoSwipeLightbox/views/public/javascripts/photoswipe-init.js');
-        echo '<script src="' . $jsPath . '?v=2"></script>' . "\n";
+        echo '<script src="' . $jsPath . '?v=3"></script>' . "\n";
         
         // PhotoSwipe HTML structure
         echo $this->_getPhotoSwipeHTML();

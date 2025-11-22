@@ -25,17 +25,28 @@
 
             for(var i = 0; i < linkElements.length; i++) {
                 var linkEl = linkElements[i];
-                var img = linkEl.querySelector('img');
-                
-                console.log('4. Processing link ' + i + ':', linkEl.href);
-                
-                if(!img) {
-                    console.log('   - No img tag found, skipping');
+
+                // Skip if already processed
+                if(linkEl.classList.contains('pswp-processed')) {
+                    console.log('4. Link ' + i + ' already processed, skipping');
                     continue;
                 }
-                
-                if(linkEl.classList.contains('pswp-processed')) {
-                    console.log('   - Already processed, skipping');
+
+                // Skip if this link has button-like attributes or classes
+                if(linkEl.getAttribute('role') === 'button' ||
+                   linkEl.classList.contains('button') ||
+                   linkEl.classList.contains('btn')) {
+                    console.log('4. Link ' + i + ' is a button, skipping');
+                    continue;
+                }
+
+                var img = linkEl.querySelector('img');
+
+                console.log('4. Processing link ' + i + ':', linkEl.href);
+
+                // Must contain an img tag to be considered a gallery image
+                if(!img) {
+                    console.log('   - No img tag found, skipping');
                     continue;
                 }
                 
@@ -124,7 +135,7 @@
 
         var onThumbnailsClick = function(e) {
             e = e || window.event;
-            
+
             var eTarget = e.target || e.srcElement;
 
             // Find the closest link element
@@ -133,19 +144,25 @@
             });
 
             if(!clickedListItem) {
-                return false;
+                return;
             }
 
             // CRITICAL FIX: Check if this is a PhotoSwipe-processed image link FIRST
-            // before preventing default
+            // If not, don't interfere at all - just return without doing anything
             if(!clickedListItem.classList.contains('pswp-processed')) {
                 // Not a gallery image, allow normal link behavior
-                return true;
+                return;
+            }
+
+            // Additional safety check: skip if link has data-no-lightbox attribute
+            if(clickedListItem.hasAttribute('data-no-lightbox') ||
+               clickedListItem.hasAttribute('data-bypass-lightbox')) {
+                return;
             }
 
             // Now we know it's a PhotoSwipe gallery link
             console.log('=== CLICK DETECTED ===');
-            
+
             // Prevent default and open gallery
             e.preventDefault ? e.preventDefault() : e.returnValue = false;
             e.stopPropagation();
@@ -165,7 +182,7 @@
             if(index >= 0) {
                 openPhotoSwipe(index);
             }
-            
+
             return false;
         };
 
@@ -314,12 +331,28 @@
         }
     };
 
+    // Initialize PhotoSwipe when DOM is ready
+    // Try to target the most specific container first, fall back to #content
+    var initGallery = function() {
+        // Try common Omeka image gallery containers first
+        var gallerySelectors = ['#item-images', '#content'];
+
+        for (var i = 0; i < gallerySelectors.length; i++) {
+            var element = document.querySelector(gallerySelectors[i]);
+            if (element) {
+                console.log('Initializing PhotoSwipe on:', gallerySelectors[i]);
+                initPhotoSwipeFromDOM(gallerySelectors[i]);
+                return;
+            }
+        }
+
+        console.log('No suitable gallery container found');
+    };
+
     if(document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            initPhotoSwipeFromDOM('#content');
-        });
+        document.addEventListener('DOMContentLoaded', initGallery);
     } else {
-        initPhotoSwipeFromDOM('#content');
+        initGallery();
     }
 
 })();

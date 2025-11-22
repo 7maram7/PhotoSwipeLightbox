@@ -32,11 +32,6 @@
                     continue;
                 }
 
-                // Skip the download button
-                if(linkEl.classList.contains('download-all-images-button')) {
-                    continue;
-                }
-
                 // Must contain an img tag to be a gallery item
                 var img = linkEl.querySelector('img');
                 if(!img) {

@@ -2,19 +2,17 @@
 /**
  * PhotoSwipe Lightbox Plugin
  *
- * Provides PhotoSwipe image gallery with lightbox functionality
- * and the ability to download all images from an item as a ZIP file.
+ * Provides PhotoSwipe v4 image gallery lightbox functionality for Omeka Classic.
  */
 class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
 {
     protected $_hooks = array(
         'public_head',
-        'public_footer',
-        'public_items_show'
+        'public_footer'
     );
 
     /**
-     * Add PhotoSwipe CSS and custom styles to item show pages
+     * Add PhotoSwipe CSS to item show pages
      */
     public function hookPublicHead($args)
     {
@@ -27,47 +25,6 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
         // PhotoSwipe v4 CSS
         echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.css" />' . "\n";
         echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.min.css" />' . "\n";
-
-        // Minimal custom styles for download button
-        echo '<style type="text/css">' . "\n";
-        echo '.download-all-images-wrapper { margin: 0.5em 0; }' . "\n";
-        echo '.download-all-images-button { display: inline-block; padding: 0.4em 0.8em; text-decoration: none; }' . "\n";
-        echo '</style>' . "\n";
-    }
-
-    /**
-     * Output download button on item show pages
-     */
-    public function hookPublicItemsShow($args)
-    {
-        $item = $args['item'];
-
-        // Check if item has any image files
-        $files = get_db()->getTable('File')->findByItem($item->id);
-        $hasImages = false;
-
-        foreach ($files as $file) {
-            if (strpos($file->mime_type, 'image/') === 0) {
-                $hasImages = true;
-                break;
-            }
-        }
-
-        // Only show button if item has images
-        if (!$hasImages) {
-            return;
-        }
-
-        // Generate download URL using Omeka plugin routing
-        // Plugin folder name is PhotoSwipeLightbox, so URL starts with that
-        $url = public_url('PhotoSwipeLightbox/index/download?item=' . $item->id);
-
-        // Output the download button
-        echo '<div class="download-all-images-wrapper">';
-        echo '<a href="' . html_escape($url) . '" class="download-all-images-button">';
-        echo '↓ ' . __('Download All Images');
-        echo '</a>';
-        echo '</div>' . "\n";
     }
 
     /**

@@ -15,17 +15,34 @@ class PhotoSwipeLightbox_IndexController extends Omeka_Controller_AbstractAction
             $layout->disableLayout();
         }
 
-        // Validate item ID
-        $itemId = (int)$this->_getParam('itemId');
+        // Get item ID from request - try multiple parameter names
+        $request = $this->getRequest();
+        $itemId = (int)$request->getParam('item');
+
         if (!$itemId) {
-            throw new Omeka_Controller_Exception_404('Invalid item ID.');
+            $itemId = (int)$request->getParam('itemId');
+        }
+
+        if (!$itemId) {
+            $itemId = (int)$request->getParam('id');
+        }
+
+        // If still no item ID, show debug info
+        if (!$itemId) {
+            $allParams = $request->getParams();
+            error_log('PhotoSwipeLightbox Download: No item ID found. All params: ' . print_r($allParams, true));
+            throw new Omeka_Controller_Exception_404('Invalid item ID. Please check the URL.');
         }
 
         // Get the item
         $item = get_record_by_id('Item', $itemId);
         if (!$item) {
-            throw new Omeka_Controller_Exception_404('Item not found.');
+            error_log('PhotoSwipeLightbox Download: Item not found for ID: ' . $itemId);
+            throw new Omeka_Controller_Exception_404('Item not found (ID: ' . $itemId . ').');
         }
+
+        // Log successful item retrieval
+        error_log('PhotoSwipeLightbox Download: Processing item ID ' . $itemId . ' - ' . metadata($item, array('Dublin Core', 'Title')));
 
         // Gather all image files for this item
         $files = get_db()->getTable('File')->findByItem($itemId);

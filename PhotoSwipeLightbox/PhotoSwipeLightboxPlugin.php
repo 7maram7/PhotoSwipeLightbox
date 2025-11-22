@@ -58,9 +58,9 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
             return;
         }
 
-        // Generate download URL using default Omeka plugin controller routing
-        // Format: /photo-swipe-lightbox/index/download/itemId/{id}
-        $url = public_url('photo-swipe-lightbox/index/download/itemId/' . $item->id);
+        // Generate download URL using Omeka plugin routing
+        // Plugin folder name is PhotoSwipeLightbox, so URL starts with that
+        $url = public_url('PhotoSwipeLightbox/index/download?item=' . $item->id);
 
         // Output the download button
         echo '<div class="download-all-images-wrapper">';

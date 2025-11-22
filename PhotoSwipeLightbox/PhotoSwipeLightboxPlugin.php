@@ -10,36 +10,8 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_hooks = array(
         'public_head',
         'public_footer',
-        'define_routes',
         'public_items_show'
     );
-
-    /**
-     * Define custom routes for the plugin
-     */
-    public function hookDefineRoutes($args)
-    {
-        $router = $args['router'];
-
-        // Don't add routes in admin theme
-        if (is_admin_theme()) {
-            return;
-        }
-
-        // Add route for downloading all images from an item
-        $router->addRoute(
-            'photoswipe_download_images',
-            new Zend_Controller_Router_Route(
-                'item/:itemId/download-images',
-                array(
-                    'module'     => 'photoswipe-lightbox',
-                    'controller' => 'index',
-                    'action'     => 'download',
-                ),
-                array('itemId' => '\d+')
-            )
-        );
-    }
 
     /**
      * Add PhotoSwipe CSS and custom styles to item show pages
@@ -69,7 +41,6 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookPublicItemsShow($args)
     {
         $item = $args['item'];
-        $view = $args['view'];
 
         // Check if item has any image files
         $files = get_db()->getTable('File')->findByItem($item->id);
@@ -87,11 +58,9 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
             return;
         }
 
-        // Generate download URL
-        $url = $view->url(
-            array('itemId' => $item->id),
-            'photoswipe_download_images'
-        );
+        // Generate download URL using default Omeka plugin controller routing
+        // Format: /photo-swipe-lightbox/index/download/itemId/{id}
+        $url = public_url('photo-swipe-lightbox/index/download/itemId/' . $item->id);
 
         // Output the download button
         echo '<div class="download-all-images-wrapper">';

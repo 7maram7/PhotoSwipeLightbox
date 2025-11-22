@@ -55,12 +55,12 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
         echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.css" />' . "\n";
         echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.min.css" />' . "\n";
 
-        // Custom styles for download button
+        // Custom styles for download button - neutral styling that adapts to theme
         echo '<style type="text/css">' . "\n";
-        echo '.download-all-images-wrapper { margin: 1em 0; text-align: center; }' . "\n";
-        echo '.download-all-images-button { display: inline-block; padding: 0.75em 1.5em; background: #369; color: white !important; text-decoration: none; border-radius: 3px; font-weight: bold; transition: background 0.2s; }' . "\n";
-        echo '.download-all-images-button:hover { background: #258; }' . "\n";
-        echo '.download-all-images-button:before { content: "⬇ "; }' . "\n";
+        echo '.download-all-images-wrapper { margin: 1em 0; }' . "\n";
+        echo '.download-all-images-button { display: inline-block; padding: 0.5em 1em; text-decoration: none; border: 1px solid #ccc; background: #f5f5f5; color: #333 !important; border-radius: 2px; transition: all 0.2s; }' . "\n";
+        echo '.download-all-images-button:hover { background: #e9e9e9; border-color: #999; }' . "\n";
+        echo '.download-all-images-button:before { content: "↓ "; font-weight: bold; }' . "\n";
         echo '</style>' . "\n";
 
         // Script to reposition the download button
@@ -136,7 +136,7 @@ class PhotoSwipeLightboxPlugin extends Omeka_Plugin_AbstractPlugin
 
         // Our custom initialization script
         $jsPath = public_url('plugins/PhotoSwipeLightbox/views/public/javascripts/photoswipe-init.js');
-        echo '<script src="' . $jsPath . '?v=3"></script>' . "\n";
+        echo '<script src="' . $jsPath . '?v=4"></script>' . "\n";
 
         // PhotoSwipe HTML structure
         echo $this->_getPhotoSwipeHTML();

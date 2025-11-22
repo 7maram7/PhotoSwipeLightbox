@@ -18,8 +18,20 @@
         var galleryItems = [];
         
         var parseThumbnailElements = function(el) {
-            var linkElements = el.querySelectorAll('a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"], a[href$=".gif"], a[href$=".JPG"], a[href$=".JPEG"], a[href$=".PNG"], a[href$=".GIF"]'),
-                items = [];
+            // Find all links that contain images
+            var allLinks = el.querySelectorAll('a');
+            var linkElements = [];
+
+            // Filter for links that either end with image extensions OR contain img tags
+            for(var j = 0; j < allLinks.length; j++) {
+                var link = allLinks[j];
+                var href = link.getAttribute('href') || '';
+
+                // Check if href contains image extension (handles query params)
+                if(/\.(jpg|jpeg|png|gif|webp|bmp|tiff)/i.test(href) || link.querySelector('img')) {
+                    linkElements.push(link);
+                }
+            }
 
             console.log('3. Found ' + linkElements.length + ' image links');
 
@@ -32,14 +44,6 @@
                     continue;
                 }
 
-                // Skip if this link has button-like attributes or classes
-                if(linkEl.getAttribute('role') === 'button' ||
-                   linkEl.classList.contains('button') ||
-                   linkEl.classList.contains('btn')) {
-                    console.log('4. Link ' + i + ' is a button, skipping');
-                    continue;
-                }
-
                 var img = linkEl.querySelector('img');
 
                 console.log('4. Processing link ' + i + ':', linkEl.href);
@@ -47,6 +51,12 @@
                 // Must contain an img tag to be considered a gallery image
                 if(!img) {
                     console.log('   - No img tag found, skipping');
+                    continue;
+                }
+
+                // Skip the download button and similar non-gallery links
+                if(linkEl.classList.contains('download-all-images-button')) {
+                    console.log('   - Download button, skipping');
                     continue;
                 }
                 

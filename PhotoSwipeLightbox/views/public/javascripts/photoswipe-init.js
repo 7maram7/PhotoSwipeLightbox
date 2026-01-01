@@ -21,6 +21,7 @@
             // Find ALL links in the gallery container
             var allLinks = el.querySelectorAll('a');
             var items = [];
+            var processedUrls = {}; // Track which image URLs we've already added
 
             console.log('3. Found ' + allLinks.length + ' total links');
 
@@ -46,6 +47,14 @@
 
                 console.log('4. Processing image link ' + items.length + ':', href);
 
+                // DEDUPE: Skip if we've already added this image URL to the gallery
+                if(processedUrls[href]) {
+                    console.log('   Skipping duplicate image:', href);
+                    // Still mark this link as processed so clicks open the lightbox
+                    linkEl.classList.add('pswp-processed');
+                    continue;
+                }
+
                 // Check for data-size attribute first
                 var size = linkEl.getAttribute('data-size');
                 var item;
@@ -65,15 +74,15 @@
                     };
                 }
 
-                // Get title from img alt or title
-                if(img.getAttribute('alt')) {
-                    item.title = img.getAttribute('alt');
-                } else if(img.getAttribute('title')) {
-                    item.title = img.getAttribute('title');
-                }
+                // Get filename from the URL for title
+                var filename = href.substring(href.lastIndexOf('/') + 1);
+                item.title = filename;
 
                 item.el = linkEl;
                 items.push(item);
+
+                // Mark this URL as processed to prevent duplicates
+                processedUrls[href] = true;
 
                 // Mark as processed
                 linkEl.classList.add('pswp-processed');
